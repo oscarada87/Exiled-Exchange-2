@@ -1,5 +1,5 @@
 {
-  "name": "awakened-poe2-trade2",
+  "name": "exalted-poe2-trade",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -8,11 +8,11 @@
     "package": "electron-builder build"
   },
   "author": {
-    "name": "Alexander Drozdov"
+    "name": "Garrett Parker"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kvan7/awakened-poe2-trade2.git"
+    "url": "https://github.com/Kvan7/exalted-poe2-trade.git"
   },
   "main": "dist/main.js",
   "dependencies": {

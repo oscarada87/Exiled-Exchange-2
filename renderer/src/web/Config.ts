@@ -76,9 +76,9 @@ export async function initConfig() {
 
 		// TODO
 		// dialog.showErrorBox(
-		//   'Awakened PoE2 Trade2 - Incompatible configuration',
+		//   'Exalted PoE2 Trade - Incompatible configuration',
 		//   // ----------------------
-		//   'You are trying to use an older version of Awakened PoE2 Trade2 with a newer incompatible configuration file.\n' +
+		//   'You are trying to use an older version of Exalted PoE2 Trade with a newer incompatible configuration file.\n' +
 		//   'You need to install the latest version to continue using it.'
 		// )
 	}
