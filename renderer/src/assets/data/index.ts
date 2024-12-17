@@ -2,12 +2,11 @@ import fnv1a from "@sindresorhus/fnv1a";
 import type {
   BaseType,
   DropEntry,
+  PseudoIdToTradeRequest,
   Stat,
   StatMatcher,
   TranslationDict,
 } from "./interfaces";
-
-import { PSEUDO_RULES, PseudoRule } from "../../web/price-check/filters/pseudo";
 
 export * from "./interfaces";
 
@@ -15,6 +14,7 @@ export let ITEM_DROP: DropEntry[];
 export let CLIENT_STRINGS: TranslationDict;
 export let CLIENT_STRINGS_REF: TranslationDict;
 export let APP_PATRONS: Array<{ from: string; months: number; style: number }>;
+export let PSEUDO_ID_TO_TRADE_REQUEST: PseudoIdToTradeRequest;
 
 export let ITEM_BY_TRANSLATED = (
   ns: BaseType["namespace"],
@@ -40,16 +40,6 @@ export let STATS_ITERATOR = function* (
   includes: string,
   andIncludes?: string[],
 ): Generator<Stat> {};
-
-export const pseudoRules: Record<string, string> = {};
-
-export function populatePseudoRules(rules: PseudoRule[]) {
-  for (const rule of rules) {
-    if (rule.pseudoPseudo) {
-      pseudoRules[rule.pseudo] = rule.pseudoPseudo;
-    }
-  }
-}
 
 function dataBinarySearch(
   data: Uint32Array,
@@ -194,14 +184,6 @@ async function loadStats(language: string) {
   );
 
   STAT_BY_REF = function (ref: string) {
-    if (ref in pseudoRules) {
-      console.log("FOUND PSEUDO RULE", ref);
-      return {
-        ref: ref,
-        translation: { string: pseudoRules[ref] },
-        isFakePseudo: true,
-      };
-    }
     let start = dataBinarySearch(
       indexRef,
       Number(fnv1a(ref, { size: 32 })),
@@ -243,7 +225,6 @@ async function loadStats(language: string) {
 const DELAYED_STAT_VALIDATION = new Set<string>();
 export function stat(text: string) {
   DELAYED_STAT_VALIDATION.add(text);
-  console.log("adding: " + text);
   return text;
 }
 
@@ -258,6 +239,10 @@ export async function init(lang: string) {
   ).json();
   APP_PATRONS = await (
     await fetch(`${import.meta.env.BASE_URL}data/patrons.json`)
+  ).json();
+
+  PSEUDO_ID_TO_TRADE_REQUEST = await (
+    await fetch(`${import.meta.env.BASE_URL}data/pseudo-pseudo.json`)
   ).json();
 
   await loadForLang(lang);

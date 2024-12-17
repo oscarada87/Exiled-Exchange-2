@@ -1,3 +1,4 @@
+{"ref": "+# total maximum Spirit", "better": 1, "id": "base_maximum_spirit", "matchers": [{"string": "# to maximum Spirit", "negate": false}], "trade": {"ids": {"pseudo": ["pseudo.pseudo_total_spirit"]}}}
 {"ref": "# Life Regenerated per Second", "better": 1, "matchers": [{"string": "# Life Regenerated per Second "}], "trade": {"ids": {"pseudo": ["pseudo.pseudo_total_life_regen"]}}}
 {"ref": "#% increased Cold Damage", "better": 1, "id": "cold_damage_+%", "matchers": [{"string": "#% increased Cold Damage", "negate": false}, {"string": "#% reduced Cold Damage", "negate": true}], "trade": {"ids": {"explicit": ["explicit.stat_3291658075"], "pseudo": ["pseudo.pseudo_increased_cold_damage"]}}}
 {"ref": "#% increased Cold Spell Damage", "better": 1, "matchers": [{"string": "#% increased Cold Spell Damage "}], "trade": {"ids": {"pseudo": ["pseudo.pseudo_increased_cold_spell_damage"]}}}

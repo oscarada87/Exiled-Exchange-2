@@ -1,6 +1,6 @@
 import {
-  populatePseudoRules,
-  pseudoRules,
+  // populatePseudoRules,
+  // pseudoRules,
   stat,
   STAT_BY_REF,
 } from "@/assets/data";
@@ -34,7 +34,7 @@ const RESISTANCES_INFO = [
   //   ref: stat("+#% to Cold and Lightning Resistances"),
   //   elements: ["cold", "lightning"],
   // },
-  // { ref: stat("+#% to Chaos Resistance"), elements: [], chaos: true },
+  // { ref: stat("+#% to Chaos Resistance"), elements: [""], chaos: true },
   // {
   //   ref: stat("+#% to Fire and Chaos Resistances"),
   //   elements: ["fire"],
@@ -62,7 +62,7 @@ const RESISTANCES_INFO = [
 //   { ref: stat("+# to Dexterity and Intelligence"), attributes: ["dex", "int"] },
 // ];
 
-export interface PseudoRule {
+interface PseudoRule {
   group?: string;
   pseudo: string;
   disabled?: boolean;
@@ -73,42 +73,37 @@ export interface PseudoRule {
     required?: boolean;
   }>;
   mutate?: (filter: StatFilter) => void;
-  pseudoPseudo: string;
 }
 
-export const PSEUDO_RULES: PseudoRule[] = [
+const PSEUDO_RULES: PseudoRule[] = [
   {
     pseudo: stat("+#% total Elemental Resistance"),
     disabled: false,
     stats: RESISTANCES_INFO.filter((info) => info.elements.length).map(
       (info) => ({ ref: info.ref, multiplier: info.elements.length }),
     ),
-    pseudoPseudo: "pseudo_pseudo.pseudo_count_elemental_resistances",
   },
-  // {
-  //   pseudo: stat("+#% total to Fire Resistance"),
-  //   group: "to_x_ele_res",
-  //   stats: RESISTANCES_INFO.filter((info) =>
-  //     info.elements.includes("fire"),
-  //   ).map((info) => ({ ref: info.ref })),
-  //   pseudoPseudo: "pseudo_pseudo.pseudo_total_to_fire_resistance",
-  // },
-  // {
-  //   pseudo: stat("+#% total to Cold Resistance"),
-  //   group: "to_x_ele_res",
-  //   stats: RESISTANCES_INFO.filter((info) =>
-  //     info.elements.includes("cold"),
-  //   ).map((info) => ({ ref: info.ref })),
-  //   pseudoPseudo: "pseudo_pseudo.pseudo_total_to_cold_resistance",
-  // },
-  // {
-  //   pseudo: stat("+#% total to Lightning Resistance"),
-  //   group: "to_x_ele_res",
-  //   stats: RESISTANCES_INFO.filter((info) =>
-  //     info.elements.includes("lightning"),
-  //   ).map((info) => ({ ref: info.ref })),
-  //   pseudoPseudo: "pseudo_pseudo.pseudo_total_to_lightning_resistance",
-  // },
+  {
+    pseudo: stat("+#% total to Fire Resistance"),
+    group: "to_x_ele_res",
+    stats: RESISTANCES_INFO.filter((info) =>
+      info.elements.includes("fire"),
+    ).map((info) => ({ ref: info.ref })),
+  },
+  {
+    pseudo: stat("+#% total to Cold Resistance"),
+    group: "to_x_ele_res",
+    stats: RESISTANCES_INFO.filter((info) =>
+      info.elements.includes("cold"),
+    ).map((info) => ({ ref: info.ref })),
+  },
+  {
+    pseudo: stat("+#% total to Lightning Resistance"),
+    group: "to_x_ele_res",
+    stats: RESISTANCES_INFO.filter((info) =>
+      info.elements.includes("lightning"),
+    ).map((info) => ({ ref: info.ref })),
+  },
   // {
   //   pseudo: stat("+#% total to Chaos Resistance"),
   //   stats: RESISTANCES_INFO.filter((info) => info.chaos === true).map(
@@ -124,7 +119,6 @@ export const PSEUDO_RULES: PseudoRule[] = [
   //       filter.disabled = false;
   //     }
   //   },
-  //   pseudoPseudo: "pseudo_pseudo.pseudo_total_to_chaos_resistance",
   // },
   // {
   //   pseudo: stat("+# total to all Attributes"),
@@ -173,6 +167,10 @@ export const PSEUDO_RULES: PseudoRule[] = [
   //       (info) => ({ ref: info.ref, multiplier: 5 / 10 }),
   //     ),
   //   ],
+  // },
+  // {
+  //   pseudo: stat("+# total maximum Spirit"),
+  //   stats: [{ ref: stat("+# to Spirit") }],
   // },
   // {
   //   pseudo: stat("#% total increased maximum Energy Shield"),
@@ -328,12 +326,6 @@ export const PSEUDO_RULES: PseudoRule[] = [
 ];
 
 export function filterPseudo(ctx: FiltersCreationContext) {
-  if (Object.keys(pseudoRules).length === 0) {
-    console.log("pseudoRules empty");
-    populatePseudoRules(PSEUDO_RULES);
-  }
-  console.log("filterPseudo ================================================");
-  console.log("CONTEXT", ctx);
   const filterByGroup = new Map<string, StatFilter[]>();
 
   rulesLoop: for (const rule of PSEUDO_RULES) {
@@ -351,11 +343,9 @@ export function filterPseudo(ctx: FiltersCreationContext) {
         },
       };
     });
-    console.log("sources", sources);
     if (!sources.length) continue;
 
     if (rule.stats.some((s) => s.required)) {
-      console.log("some stat required");
       for (const stat of rule.stats) {
         if (
           stat.required &&
@@ -365,7 +355,6 @@ export function filterPseudo(ctx: FiltersCreationContext) {
         }
       }
     }
-    console.log("RULE", rule);
 
     const filter = calculatedStatToFilter(
       {

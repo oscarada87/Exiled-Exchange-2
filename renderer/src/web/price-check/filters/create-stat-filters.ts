@@ -190,12 +190,6 @@ export function calculatedStatToFilter(
   percent: number,
   item: ParsedItem,
 ): StatFilter {
-  console.log(
-    "CALCULATED STAT TO FILTER============================================================",
-  );
-  console.log("calc", calc);
-  console.log("percent", percent);
-  console.log("item", item);
   const { stat, sources, type } = calc;
   let filter: StatFilter;
 
