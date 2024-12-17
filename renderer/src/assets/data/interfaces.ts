@@ -30,6 +30,7 @@ export interface Stat {
       [type: string]: string[];
     };
   };
+  isFakePseudo?: true;
 }
 
 export interface DropEntry {

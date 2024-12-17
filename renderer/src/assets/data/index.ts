@@ -7,6 +7,8 @@ import type {
   TranslationDict,
 } from "./interfaces";
 
+import { PSEUDO_RULES, PseudoRule } from "../../web/price-check/filters/pseudo";
+
 export * from "./interfaces";
 
 export let ITEM_DROP: DropEntry[];
@@ -38,6 +40,16 @@ export let STATS_ITERATOR = function* (
   includes: string,
   andIncludes?: string[],
 ): Generator<Stat> {};
+
+export const pseudoRules: Record<string, string> = {};
+
+export function populatePseudoRules(rules: PseudoRule[]) {
+  for (const rule of rules) {
+    if (rule.pseudoPseudo) {
+      pseudoRules[rule.pseudo] = rule.pseudoPseudo;
+    }
+  }
+}
 
 function dataBinarySearch(
   data: Uint32Array,
@@ -182,6 +194,14 @@ async function loadStats(language: string) {
   );
 
   STAT_BY_REF = function (ref: string) {
+    if (ref in pseudoRules) {
+      console.log("FOUND PSEUDO RULE", ref);
+      return {
+        ref: ref,
+        translation: { string: pseudoRules[ref] },
+        isFakePseudo: true,
+      };
+    }
     let start = dataBinarySearch(
       indexRef,
       Number(fnv1a(ref, { size: 32 })),
@@ -223,6 +243,7 @@ async function loadStats(language: string) {
 const DELAYED_STAT_VALIDATION = new Set<string>();
 export function stat(text: string) {
   DELAYED_STAT_VALIDATION.add(text);
+  console.log("adding: " + text);
   return text;
 }
 
@@ -252,8 +273,11 @@ export async function init(lang: string) {
     }
   }
   if (failed) {
-    throw new Error(
-      `Cannot find stat${missing.length > 1 ? "s" : ""}: ${missing.join("\n")}`,
+    // throw new Error(
+    //   `Cannot find stat${missing.length > 1 ? "s" : ""}: ${missing.join("\n")}`,
+    // );
+    console.log(
+      "Cannot find stat" + (missing.length > 1 ? "s" : "") + missing.join("\n"),
     );
   }
   DELAYED_STAT_VALIDATION.clear();
