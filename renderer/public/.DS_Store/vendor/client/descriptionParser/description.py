@@ -1,23 +1,28 @@
+import logging
 import os
 from pprint import pprint
 
 from services.statNameBuilder import convert_stat_name
 
+logger = logging.getLogger(__name__)
+
 
 class Description:
     english_ref = None
 
-    def __init__(self, lines: list[str], lang="English"):
-        self.lines = lines
+    def __init__(self, lines: list[str], lang="English", log_level=logging.FATAL):
         self.lang = lang
+
+        logger.debug(f"Initializing Description with lang: {lang}")
+
         if not lines[0].startswith("description"):
+            logger.error("Invalid description block.")
             raise ValueError("Invalid description block")
+
         self.id = self.parse_id(lines)
-        print(self.id)
+        logger.debug(f"Parsed ID: {self.id}")
 
-        # self.english_ref = self.get_ref(lines)
-
-        self.data = self.parse_lines(self.lines, self.id)
+        self.data = self.parse_lines(lines, self.id)
 
     def __str__(self):
         return f"Description(id={self.id}, english_ref={self.english_ref})"
@@ -25,11 +30,13 @@ class Description:
     def parse_id(self, lines: list[str]) -> str:
         assert lines[0].startswith("description")
         line = lines[1].strip()
+        logger.debug(f"Parsing ID from line: {line}")
         return line.strip()[2:].replace('"', "")
 
     def parse_lines(self, lines: list[str], id: str) -> dict:
         assert lines[0].startswith("description")
         sanitized_lines = self.sanitize_lines(lines)
+        logger.debug(f"Sanitized lines: {sanitized_lines}")
 
         blocks = self.parse_blocks(sanitized_lines)
         lang_blocks = [self.simplify_block(block) for block in blocks]
@@ -40,19 +47,24 @@ class Description:
             for lang, mod_lines in lang_blocks
         }
 
-        # Filter lang_dict for only English and self.lang
-        filtered_lang_dict = {
-            lang: matchers
-            for lang, matchers in lang_dict.items()
-            if lang in ["English", self.lang]
-        }
+        logger.debug(f"Language dictionary created: {lang_dict}")
 
-        return filtered_lang_dict
+        # Filter lang_dict for only English and self.lang
+        # filtered_lang_dict = {
+        #     lang: matchers
+        #     for lang, matchers in lang_dict.items()
+        #     if lang in ["English", self.lang]
+        # }
+
+        # logger.debug(f"Filtered language dictionary: {filtered_lang_dict}")
+        return lang_dict
 
     def sanitize_lines(self, lines: list[str]) -> list[str]:
+        logger.debug(f"Sanitizing lines: {lines}")
         return [line.strip() for line in lines[1:]]
 
     def parse_blocks(self, lines: list[str]) -> list[list[str]]:
+        logger.debug("Parsing lines into blocks.")
         blocks = [[]]
 
         for i in range(len(lines)):
@@ -60,6 +72,7 @@ class Description:
                 blocks.append([])
             blocks[-1].append(lines[i])
 
+        logger.debug(f"Created {len(blocks)} blocks.")
         return blocks
 
     def simplify_block(self, block: list[str]) -> tuple[str, list[str]]:
@@ -77,6 +90,7 @@ class Description:
                 neg_line = neg_line[neg_line.find('"') + 1 : end + len("negate")]
                 out_lines.append(neg_line)
 
+        logger.debug(f"Simplified block for lang: {lang}, lines: {out_lines}")
         return lang, out_lines
 
     def extract_lang(self, line: str) -> str:
@@ -88,12 +102,15 @@ class Description:
     def get_matchers(
         self, lines: list[str], is_en: bool
     ) -> list[dict[str, str | bool]]:
+        logger.debug("Getting matchers.")
         matchers = []
         for line in lines:
             stat_name = convert_stat_name(line)
             if stat_name is None:
+                logger.warning("Stat name could not be converted. Skipping line.")
                 continue
             matcher = stat_name
+
             # remove prefixes
             if matcher[0] == "+":
                 matcher = matcher[1:]
@@ -103,6 +120,8 @@ class Description:
             matchers.append({"string": matcher, "negate": has_negate})
             if is_en and self.english_ref is None:
                 self.english_ref = stat_name
+
+        logger.debug(f"Matchers found: {matchers}")
         return matchers
 
 
@@ -114,7 +133,7 @@ if __name__ == "__main__":
         encoding="utf-8",
     ) as f:
         lines = f.readlines()
-    print(lines)
+    logger.debug(f"Loaded lines for testing: {lines}")
     desc = Description(lines)
 
-    print(desc.english)
+    print(desc.english_ref)

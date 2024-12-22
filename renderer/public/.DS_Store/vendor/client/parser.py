@@ -14,12 +14,16 @@ SnosMe - https://github.com/SnosMe/awakened-poe-trade
 """
 
 import json
+import logging
 import os
 import re
 import urllib.parse
 from pprint import pprint
 
 from descriptionParser.descriptionFile import DescriptionFile
+from services.logger_setup import set_log_level
+
+logger = logging.getLogger(__name__)
 
 LANG_CODES_TO_NAMES = {
     "en": "English",
@@ -56,10 +60,8 @@ class Parser:
         self.skill_gems = self.load_file("SkillGems")
         self.skill_gem_info = self.load_file("SkillGemInfo")
         self.stats_file = self.load_file("Stats")
-        self.en_stats_file = self.load_file("Stats", is_en=True)
         self.translation_files = os.listdir(f"{self.cwd}/descriptions")
         self.mods_file = self.load_file("Mods")
-        self.en_mods_file = self.load_file("Mods", is_en=True)
         # NOTE: could need to add local here?
         self.trade_stats = json.loads(
             open(
@@ -121,12 +123,15 @@ class Parser:
         return stat
 
     def parse_trade_ids(self):
+        logger.debug("Starting to parse trade IDs.")
         for res in self.trade_stats["result"]:
             for entry in res.get("entries"):
                 id = entry.get("id")
                 text = entry.get("text")
                 type = entry.get("type")
                 text = self.convert_stat_name(text)
+
+                logger.debug(f"Processing entry - ID: {id}, Text: {text}, Type: {type}")
 
                 if text not in self.stats_trade_ids:
                     self.stats_trade_ids[text] = {}
@@ -135,6 +140,8 @@ class Parser:
                     self.stats_trade_ids[text][type] = []
 
                 self.stats_trade_ids[text][type].append(id)
+
+        logger.debug("Completed parsing trade IDs.")
 
     def parse_mod(self, id, lines, log=False):
         matchers = []
@@ -248,8 +255,10 @@ class Parser:
             for a in id:
                 matchers = []
                 if LANG_CODES_TO_NAMES[self.lang] in mod.data:
+                    logger.debug(f"Found translations for {mod.english_ref}")
                     matchers = mod.data[LANG_CODES_TO_NAMES[self.lang]]
                 else:
+                    logger.warning(f"No translations found for {mod.english_ref}")
                     matchers = mod.data["English"]
                 if a == "number_of_additional_arrows":
                     matchers.append(
@@ -258,64 +267,82 @@ class Parser:
                             "negate": False,
                         }
                     )
+                logger.debug(f"Matchers: {matchers}")
                 self.mod_translations[a] = {
                     "ref": mod.english_ref,
                     "matchers": matchers,
                 }
 
     def parse_mods(self):
+        logger.debug("Starting to parse mods.")
+
         for stat in self.stats_file:
             id = stat.get("_index")
             name = stat.get("Id")
+
+            logger.debug(f"Processing stat - ID: {id}, Name: {name}")
+
             self.stats[id] = name
 
         # translations
         for file in self.translation_files:
+            logger.debug(f"Checking translation file: {file}")
+
             if os.path.isdir(f"{self.cwd}/descriptions/{file}"):
-                # traverse directories if it doesnt start with _
+                # traverse directories if it doesn't start with _
                 if not file.startswith("_"):
                     for _file in os.listdir(f"{self.cwd}/descriptions/{file}"):
+                        logger.debug(f"Parsing translation file: {file}/{_file}")
                         self.new_parse_translation_file(f"{file}/{_file}")
             elif ".csd" in file:
+                logger.debug(f"Parsing translation file: {file}")
                 self.new_parse_translation_file(file)
 
         for mod in self.mods_file:
             id = mod.get("Id")
             stats_key = mod.get("StatsKey1")
+
+            logger.debug(f"Processing mod - ID: {id}, StatsKey: {stats_key}")
+
             if stats_key is not None:
                 stats_id = self.stats.get(stats_key)
                 translation = self.mod_translations.get(stats_id)
+
                 if translation:
                     ref = translation.get("ref")
-                    # print(translation)
                     matchers = translation.get("matchers")
+
                     if matchers is None or len(matchers) == 0:
-                        print("No matchers found for", stats_id)
+                        logger.warning(f"No matchers found for stats ID: {stats_id}.")
                         continue
+
                     ids = self.stats_trade_ids.get(matchers[0].get("string"))
+
                     if ids is None and len(matchers) > 1:
                         ids = self.stats_trade_ids.get(matchers[1].get("string"))
                         if ids is None:
-                            # print(
-                            #     "No trade ids found for",
-                            #     matchers[0].get("string"),
-                            #     "or",
-                            #     matchers[1].get("string"),
-                            # )
-                            self.matchers_no_trade_ids.append(matchers[0].get("string"))
-                            self.matchers_no_trade_ids.append(matchers[1].get("string"))
+                            logger.warning(
+                                f"No trade IDs found for matchers: {matchers[0].get('string')} or {matchers[1].get('string')}."
+                            )
+                            self.matchers_no_trade_ids.extend(
+                                [matchers[0].get("string"), matchers[1].get("string")]
+                            )
                     elif ids is None:
-                        # print("No trade ids found for", matchers[0].get("string"))
+                        logger.warning(
+                            f"No trade IDs found for matcher: {matchers[0].get('string')}."
+                        )
                         self.matchers_no_trade_ids.append(matchers[0].get("string"))
+
                     trade = {"ids": ids}
                     self.mods[id] = {
-                        "ref": self.en_mod_translations[id].get("ref"),
-                        # "ref": translation.get("ref"),
+                        "ref": translation.get("ref"),
                         "better": 1,
                         "id": stats_id,
                         "matchers": translation.get("matchers"),
                         "trade": trade,
                     }
+
+        logger.debug("Completed parsing mods.")
 
     def parse_categories(self):
         # parse item categories
@@ -588,4 +615,6 @@ class Parser:
 
 
 if __name__ == "__main__":
+    logger.info("Starting parser")
+    set_log_level(logging.WARNING)
     Parser("ru").run()
