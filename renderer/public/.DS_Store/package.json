@@ -27,9 +27,9 @@
     "stats": "ts-node stats.ts",
     "copy-files": "sh ./copy-tables.sh",
     "push-ndjson": "bash ./push-ndjson.sh",
-    "anon-vodka-python": "python ./vendor/client/parser.py",
-    "langs-anon-vodka-python": "python ./vendor/client/parserRunner.py",
-    "temp-images": "python ./data/en/imageFix.py",
+    "anon-vodka-python": "cd ./vendor/client && python ./parser.py",
+    "langs-anon-vodka-python": "cd ./vendor/client && python ./parserRunner.py",
+    "temp-images": "python ./data/imageFix.py",
     "copy-py-ndjson": "bash ./copy-py-ndjson.sh",
     "fetch-json": "bash ./pull-json.sh"
   },

@@ -17,9 +17,9 @@ def read_ndjson(file_path, encoding="utf-8"):
 
 def write_ndjson(file_path, data):
     """Writes a list of JSON objects to a newline-delimited JSON file."""
-    with open(file_path, "w", encoding="utf-16") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         for item in data:
-            file.write(json.dumps(item) + "\n")
+            file.write(json.dumps(item, ensure_ascii=False) + "\n")
 
 
 def update_icons(new_items, old_items):
@@ -37,15 +37,13 @@ def update_icons(new_items, old_items):
 if __name__ == "__main__":
     for lang in SUPPORTED_LANG:
         # Determine the directory this script is in
-        script_dir = get_script_dir()
+        script_dir = get_script_dir(lang)
 
         print(script_dir)
 
         # Load the old and new items from the respective files in the script's directory
         old_items = read_ndjson(os.path.join(script_dir, "items.ndjson.old"))
-        new_items = read_ndjson(
-            os.path.join(script_dir, "items.ndjson"), encoding="utf-16"
-        )
+        new_items = read_ndjson(os.path.join(script_dir, "items.ndjson"))
 
         # Update new_items with icons from old_items where applicable
         updated_new_items = update_icons(new_items, old_items)

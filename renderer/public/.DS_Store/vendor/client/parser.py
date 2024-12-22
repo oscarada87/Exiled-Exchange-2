@@ -523,7 +523,7 @@ class Parser:
                 )
 
     def write_to_file(self):
-        f = open(f"{self.out_dir}/items.ndjson", "w", encoding="utf-16")
+        f = open(f"{self.out_dir}/items.ndjson", "w", encoding="utf-8")
         items_name = sorted(self.items.values(), key=lambda x: x.get("name"))
         for item in items_name:
             name = item.get("name")
@@ -588,7 +588,7 @@ class Parser:
         m = open(
             f"{self.out_dir}/stats.ndjson",
             "w",
-            encoding="utf-16",
+            encoding="utf-8",
         )
         for mod in self.mods.values():
             id = mod.get("id")
@@ -603,21 +603,21 @@ class Parser:
         with open(
             f"{self.get_script_dir()}/pyDumps/{self.lang+'-out'}/items_dump.json",
             "w",
-            encoding="utf-16",
+            encoding="utf-8",
         ) as f:
             f.write(json.dumps(self.items, indent=4, ensure_ascii=False))
 
         with open(
             f"{self.get_script_dir()}/pyDumps/{self.lang+'-out'}/mods_dump.json",
             "w",
-            encoding="utf-16",
+            encoding="utf-8",
         ) as f:
             f.write(json.dumps(self.mods, indent=4, ensure_ascii=False))
 
         with open(
             f"{self.get_script_dir()}/pyDumps/{self.lang+'-out'}/matchers_no_trade_ids.json",
             "w",
-            encoding="utf-16",
+            encoding="utf-8",
         ) as f:
             f.write(
                 json.dumps(self.matchers_no_trade_ids, indent=4, ensure_ascii=False)
