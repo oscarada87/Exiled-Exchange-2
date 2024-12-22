@@ -14,7 +14,7 @@ localizations = ["en", "ru", "ko", "cmn-Hant"]
 def process_filtered_pseudo_stats(loc):
     filtered_file_path = f"{get_script_dir()}/{loc}/pseudo_stats.ndjson"
     stats_file_path = f"{get_script_dir()}/../../data/{loc}/stats.ndjson"
-    output_file_path = f"{get_script_dir()}/../../data/{loc}/updated_stats.ndjson"
+    output_file_path = f"{get_script_dir()}/../../data/{loc}/stats.ndjson"
 
     # Load all stats at the start to avoid repeated loading
     with open(stats_file_path, "r", encoding="utf-8") as stats_file:

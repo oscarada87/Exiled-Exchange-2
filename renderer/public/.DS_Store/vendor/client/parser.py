@@ -420,7 +420,7 @@ class Parser:
             # update name to localized keep ref name as english
             self.items[id] = {
                 "name": name,
-                "refName": refName,
+                "refName": name,
                 "namespace": "ITEM",
                 "class": class_key,
                 "dropLevel": item.get("DropLevel"),
