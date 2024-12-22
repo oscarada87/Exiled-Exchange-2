@@ -14,11 +14,23 @@ SnosMe - https://github.com/SnosMe/awakened-poe-trade
 """
 
 import json
+import logging
 import os
 import re
 import urllib.parse
+from pprint import pprint
 
-import requests
+from descriptionParser.descriptionFile import DescriptionFile
+from services.logger_setup import set_log_level
+
+logger = logging.getLogger(__name__)
+
+LANG_CODES_TO_NAMES = {
+    "en": "English",
+    "ru": "Russian",
+    "ko": "Korean",
+    "cmn-Hant": "Traditional Chinese",
+}
 
 
 class Parser:
@@ -26,8 +38,16 @@ class Parser:
         """Returns the directory where the script is located."""
         return os.path.dirname(os.path.realpath(__file__))
 
-    def load_file(self, file):
-        return json.loads(open(f"{self.base_dir}/{self.lang}/{file}.json").read())
+    def load_file(self, file, is_en=False):
+        logger.info(
+            f"LOADING FILE: ++ {self.base_dir}{self.lang if not is_en else 'en'}/{file}.json"
+        )
+        return json.loads(
+            open(
+                f"{self.base_dir}{self.lang if not is_en else 'en'}/{file}.json",
+                encoding="utf-8",
+            ).read()
+        )
 
     def __init__(self, lang="en"):
         self.lang = lang
@@ -47,13 +67,19 @@ class Parser:
         self.mods_file = self.load_file("Mods")
         # NOTE: could need to add local here?
         self.trade_stats = json.loads(
-            open(f"{self.cwd}/../json-api/en/stats.json").read()
+            open(
+                f"{self.cwd}/../json-api/{self.lang}/stats.json", encoding="utf-8"
+            ).read()
         )  # content of https://www.pathofexile.com/api/trade2/data/stats
         self.trade_items = json.loads(
-            open(f"{self.cwd}/../json-api/en/items.json").read()
+            open(
+                f"{self.cwd}/../json-api/{self.lang}/items.json", encoding="utf-8"
+            ).read()
         )  # content of https://www.pathofexile.com/api/trade2/data/items
         self.trade_exchange_items = json.loads(
-            open(f"{self.cwd}/../json-api/en/static.json").read()
+            open(
+                f"{self.cwd}/../json-api/{self.lang}/static.json", encoding="utf-8"
+            ).read()
         )  # content of https://www.pathofexile.com/api/trade2/data/static
 
         self.items = {}
@@ -65,6 +91,17 @@ class Parser:
         self.mod_translations = {}
         self.mods = {}
         self.matchers_no_trade_ids = []
+
+        base_en = self.load_file("BaseItemTypes", is_en=True)
+        self.base_en_items_lookup = dict()
+        for item in base_en:
+            id = item.get("_index")
+            if id is None:
+                continue
+            name = item.get("Name")
+            if name is None:
+                continue
+            self.base_en_items_lookup[id] = name
 
     def make_poe_cdn_url(self, path):
         return urllib.parse.urljoin("https://web.poecdn.com/", path)
@@ -100,12 +137,15 @@ class Parser:
         return stat
 
     def parse_trade_ids(self):
+        logger.debug("Starting to parse trade IDs.")
         for res in self.trade_stats["result"]:
             for entry in res.get("entries"):
                 id = entry.get("id")
                 text = entry.get("text")
                 type = entry.get("type")
                 text = self.convert_stat_name(text)
+
+                logger.debug(f"Processing entry - ID: {id}, Text: {text}, Type: {type}")
 
                 if text not in self.stats_trade_ids:
                     self.stats_trade_ids[text] = {}
@@ -115,16 +155,19 @@ class Parser:
 
                 self.stats_trade_ids[text][type].append(id)
 
-    def parse_mod(self, id, english):
+        logger.debug("Completed parsing trade IDs.")
+
+    def parse_mod(self, id, lines, log=False):
         matchers = []
         ref = None
-        for lang in english:
-            lang = self.convert_stat_name(lang)
 
-            if lang is None:
+        for line in lines:
+            line = self.convert_stat_name(line)
+
+            if line is None:
                 continue
 
-            matcher = lang
+            matcher = line
             # remove prefixes
             if matcher[0] == "+":
                 matcher = matcher[1:]
@@ -137,7 +180,7 @@ class Parser:
             matchers.append({"string": matcher, "negate": has_negate})
 
             if ref is None:
-                ref = lang
+                ref = line
 
         id = id.split(" ")
 
@@ -146,15 +189,42 @@ class Parser:
                 matchers.append(
                     {"string": "Bow Attacks fire # additional Arrows", "negate": False}
                 )
+            # may just need to force the english one here?
             self.mod_translations[a] = {
                 "ref": ref,
                 "matchers": matchers,
             }
 
+    def parse_translation_line(self, stats_translations, i, id, log=False):
+        if log:
+            print(
+                "===================================================================="
+            )
+            print(f"[i:{i}, id:{id}] {stats_translations[i]}")
+            print(f"[i:{i+1}, id:{id}] {stats_translations[i+1]}")
+            print(f"[i:{i+2}, id:{id}] {stats_translations[i+2]}")
+            print(f"[i:{i+3}, id:{id}] {stats_translations[i+3]}")
+        line = stats_translations[i + 3].strip()  # skip first 2 characters
+        start = line.find('"')
+        end = line.rfind('"')
+        line = line[start + 1 : end]
+
+        # convert to array so we can add the negated option later on, if one exists
+        line = [line]
+
+        negate_line = stats_translations[i + 4].strip()
+        if "lang" not in negate_line and "negate" in negate_line:
+            # mod has a negated version
+            end = negate_line.find("negate")
+            negate_line = negate_line[negate_line.find('"') + 1 : end + len("negate")]
+            line.append(negate_line)
+        self.parse_mod(id, line, log=log)
+
     def parse_translation_file(self, file):
         dir = f"{self.cwd}/descriptions/{file}"
         print("Parsing", dir)
         stats_translations = open(dir, encoding="utf-16").read().split("\n")
+        should_log = True
         for i in range(0, len(stats_translations)):
             line = stats_translations[i]
 
@@ -163,75 +233,120 @@ class Parser:
                 id = (
                     stats_translations[i + 1].strip()[2:].replace('"', "")
                 )  # skip first 2 characters
-                english = stats_translations[i + 3].strip()  # skip first 2 characters
-                start = english.find('"')
-                end = english.rfind('"')
-                english = english[start + 1 : end]
 
-                # convert to array so we can add the negated option later on, if one exists
-                english = [english]
+                if self.lang == "en":
+                    self.parse_translation_line(
+                        stats_translations, i, id, log=should_log
+                    )
+                    should_log = False
+                else:
+                    j = i
+                    while (
+                        j + 5 < 100
+                        and stats_translations[j + 1] != "description"
+                        and LANG_CODES_TO_NAMES[self.lang]
+                        not in stats_translations[j + 1]
+                    ):
+                        j += 1
+                    if should_log:
+                        print(
+                            f"Parsing [j:{j + 1}, id:{id}] {stats_translations[j + 1]}"
+                        )
+                    if stats_translations[j + 1] != "description":
+                        self.parse_translation_line(
+                            stats_translations, j, id, log=should_log
+                        )
+                        should_log = False
 
-                negate_english = stats_translations[i + 4].strip()
-                if "lang" not in negate_english and "negate" in negate_english:
-                    # mod has a negated version
-                    end = negate_english.find("negate")
-                    negate_english = negate_english[
-                        negate_english.find('"') + 1 : end + len("negate")
-                    ]
-                    english.append(negate_english)
+    def new_parse_translation_file(self, file):
+        dir = f"{self.cwd}/descriptions/{file}"
+        print("Parsing", dir)
+        description_file = DescriptionFile(dir)
 
-                self.parse_mod(id, english)
+        for mod in description_file.descriptions:
+            id = mod.id.split(" ")
+
+            for a in id:
+                matchers = []
+                if LANG_CODES_TO_NAMES[self.lang] in mod.data:
+                    logger.debug(f"Found translations for {mod.english_ref}")
+                    matchers = mod.data[LANG_CODES_TO_NAMES[self.lang]]
+                else:
+                    logger.warning(f"No translations found for {mod.english_ref}")
+                    matchers = mod.data["English"]
+                if a == "number_of_additional_arrows":
+                    matchers.append(
+                        {
+                            "string": "Bow Attacks fire # additional Arrows",
+                            "negate": False,
+                        }
+                    )
+                logger.debug(f"Matchers: {matchers}")
+                self.mod_translations[a] = {
+                    "ref": mod.english_ref,
+                    "matchers": matchers,
+                }
 
     def parse_mods(self):
+        logger.debug("Starting to parse mods.")
+
         for stat in self.stats_file:
             id = stat.get("_index")
             name = stat.get("Id")
+
+            logger.debug(f"Processing stat - ID: {id}, Name: {name}")
+
             self.stats[id] = name
 
         # translations
         for file in self.translation_files:
+            logger.debug(f"Checking translation file: {file}")
+
             if os.path.isdir(f"{self.cwd}/descriptions/{file}"):
-                # traverse directories if it doesnt start with _
+                # traverse directories if it doesn't start with _
                 if not file.startswith("_"):
                     for _file in os.listdir(f"{self.cwd}/descriptions/{file}"):
-                        self.parse_translation_file(f"{file}/{_file}")
+                        logger.debug(f"Parsing translation file: {file}/{_file}")
+                        self.new_parse_translation_file(f"{file}/{_file}")
             elif ".csd" in file:
-                self.parse_translation_file(file)
+                logger.debug(f"Parsing translation file: {file}")
+                self.new_parse_translation_file(file)
 
         for mod in self.mods_file:
             id = mod.get("Id")
             stats_key = mod.get("StatsKey1")
+
+            logger.debug(f"Processing mod - ID: {id}, StatsKey: {stats_key}")
+
             if stats_key is not None:
                 stats_id = self.stats.get(stats_key)
                 translation = self.mod_translations.get(stats_id)
+
                 if translation:
                     ref = translation.get("ref")
                     matchers = translation.get("matchers")
+
+                    if matchers is None or len(matchers) == 0:
+                        logger.warning(f"No matchers found for stats ID: {stats_id}.")
+                        continue
+
                     ids = self.stats_trade_ids.get(matchers[0].get("string"))
-                    # if ref.lower() == "bow attacks fire an additional arrow":
-                    #     print("ID")
-                    #     print(f"stats_id: {stats_id}")
-                    #     print(f"matchers: {matchers}")
-                    #     print(f"ref: {ref}")
-                    #     print("break")
-                    #     print(f"mod: {mod}")
-                    #     print(f"stats_trade_ids: {stats_trade_ids}")
-                    #     print(f"ids: {ids}")
-                    #     print(f"translation: {translation}")
+
                     if ids is None and len(matchers) > 1:
                         ids = self.stats_trade_ids.get(matchers[1].get("string"))
                         if ids is None:
-                            # print(
-                            #     "No trade ids found for",
-                            #     matchers[0].get("string"),
-                            #     "or",
-                            #     matchers[1].get("string"),
-                            # )
-                            self.matchers_no_trade_ids.append(matchers[0].get("string"))
-                            self.matchers_no_trade_ids.append(matchers[1].get("string"))
+                            logger.warning(
+                                f"No trade IDs found for matchers: {matchers[0].get('string')} or {matchers[1].get('string')}."
+                            )
+                            self.matchers_no_trade_ids.extend(
+                                [matchers[0].get("string"), matchers[1].get("string")]
+                            )
                     elif ids is None:
-                        # print("No trade ids found for", matchers[0].get("string"))
+                        logger.warning(
+                            f"No trade IDs found for matcher: {matchers[0].get('string')}."
+                        )
                         self.matchers_no_trade_ids.append(matchers[0].get("string"))
+
                     trade = {"ids": ids}
                     self.mods[id] = {
                         "ref": translation.get("ref"),
@@ -240,6 +355,8 @@ class Parser:
                         "matchers": translation.get("matchers"),
                         "trade": trade,
                     }
+
+        logger.debug("Completed parsing mods.")
 
     def parse_categories(self):
         # parse item categories
@@ -296,7 +413,11 @@ class Parser:
                 continue
 
             class_key = item.get("ItemClassesKey")
+            refName = name
+            if id in self.base_en_items_lookup:
+                refName = self.base_en_items_lookup[id]
 
+            # update name to localized keep ref name as english
             self.items[id] = {
                 "name": name,
                 "refName": name,
@@ -343,7 +464,7 @@ class Parser:
 
         # convert base items into armor types
         # armour needs the armour tag ("armour": "ar": [min, max], "ev": [min, max], "es": [min, max])
-        # Changed since db only has once value for each stat
+        # Changed since db only has one value for each stat
         for armour in self.armour_types:
             id = armour.get("BaseItemTypesKey")
 
@@ -406,6 +527,7 @@ class Parser:
         items_name = sorted(self.items.values(), key=lambda x: x.get("name"))
         for item in items_name:
             name = item.get("name")
+            refName = item.get("refName")
             namespace = item.get("namespace", "ITEM")
             craftable = item.get("craftable", None)
             gem = item.get("gem", None)
@@ -417,7 +539,7 @@ class Parser:
 
             out = {
                 "name": name,
-                "refName": name,
+                "refName": refName,
                 "namespace": namespace,
                 "icon": icon,
             }
@@ -440,37 +562,41 @@ class Parser:
             if gem:
                 out.update({"gem": gem})
 
-            f.write(json.dumps(out) + "\n")
+            f.write(json.dumps(out, ensure_ascii=False) + "\n")
 
         for item in self.unique_items:
-            f.write(json.dumps(item) + "\n")
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
         f.close()
 
         # somehow not a thing? - possibly missing some data
-        self.mods["physical_local_damage_+%"] = {
-            "ref": "#% increased Physical Damage",
-            "better": 1,
-            "id": "physical_local_damage_+%",
-            "matchers": [{"string": "#% increased Physical Damage"}],
-            "trade": {
-                "ids": {
-                    "explicit": ["explicit.stat_419810844"],
-                    "fractured": ["fractured.stat_419810844"],
-                    "rune": ["rune.stat_419810844"],
-                }
-            },
-        }
+        # self.mods["physical_local_damage_+%"] = {
+        #     "ref": "#% increased Physical Damage",
+        #     "better": 1,
+        #     "id": "physical_local_damage_+%",
+        #     "matchers": [{"string": "#% increased Physical Damage"}],
+        #     "trade": {
+        #         "ids": {
+        #             "explicit": ["explicit.stat_419810844"],
+        #             "fractured": ["fractured.stat_419810844"],
+        #             "rune": ["rune.stat_419810844"],
+        #         }
+        #     },
+        # }
 
         seen = set()
-        m = open(f"{self.out_dir}/stats.ndjson", "w", encoding="utf-8")
+        m = open(
+            f"{self.out_dir}/stats.ndjson",
+            "w",
+            encoding="utf-8",
+        )
         for mod in self.mods.values():
             id = mod.get("id")
 
             if id in seen:
                 continue
 
-            m.write(json.dumps(mod) + "\n")
+            m.write(json.dumps(mod, ensure_ascii=False) + "\n")
             seen.add(id)
         m.close()
 
@@ -479,21 +605,23 @@ class Parser:
             "w",
             encoding="utf-8",
         ) as f:
-            f.write(json.dumps(self.items, indent=4))
+            f.write(json.dumps(self.items, indent=4, ensure_ascii=False))
 
         with open(
             f"{self.get_script_dir()}/pyDumps/{self.lang+'-out'}/mods_dump.json",
             "w",
             encoding="utf-8",
         ) as f:
-            f.write(json.dumps(self.mods, indent=4))
+            f.write(json.dumps(self.mods, indent=4, ensure_ascii=False))
 
         with open(
             f"{self.get_script_dir()}/pyDumps/{self.lang+'-out'}/matchers_no_trade_ids.json",
             "w",
             encoding="utf-8",
         ) as f:
-            f.write(json.dumps(self.matchers_no_trade_ids, indent=4))
+            f.write(
+                json.dumps(self.matchers_no_trade_ids, indent=4, ensure_ascii=False)
+            )
 
     def run(self):
         self.parse_trade_ids()
@@ -506,4 +634,6 @@ class Parser:
 
 
 if __name__ == "__main__":
-    Parser().run()
+    logger.info("Starting parser")
+    set_log_level(logging.INFO)
+    Parser("ru").run()
