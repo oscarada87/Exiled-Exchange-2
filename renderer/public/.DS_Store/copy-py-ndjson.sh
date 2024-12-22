@@ -1,6 +1,6 @@
 
 
-supported_languages=("en" "ru")
+supported_languages=("en" "ru" "ko" "cmn-Hant")
 
 for lang in "${supported_languages[@]}"; do
     echo "Copying $lang"

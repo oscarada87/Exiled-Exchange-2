@@ -17,7 +17,7 @@ def process_filtered_pseudo_stats(loc):
     output_file_path = f"{get_script_dir()}/../../data/{loc}/updated_stats.ndjson"
 
     # Load all stats at the start to avoid repeated loading
-    with open(stats_file_path, "r", encoding="utf-8") as stats_file:
+    with open(stats_file_path, "r", encoding="utf-16") as stats_file:
         original_stats_lines = [json.loads(line) for line in stats_file]
 
     updated_lines = []
@@ -68,7 +68,7 @@ def process_filtered_pseudo_stats(loc):
                 print(f"Error parsing JSON from filtered file: {line}")
 
     # Write updated lines and remaining original stats to a new stats file
-    with open(output_file_path, "w", encoding="utf-8") as output_file:
+    with open(output_file_path, "w", encoding="utf-16") as output_file:
         # Write new lines at the top
         for updated_line in updated_lines:
             output_file.write(json.dumps(updated_line, ensure_ascii=False) + "\n")

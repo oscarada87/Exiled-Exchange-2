@@ -39,9 +39,12 @@ class Parser:
         return os.path.dirname(os.path.realpath(__file__))
 
     def load_file(self, file, is_en=False):
+        logger.info(
+            f"LOADING FILE: ++ {self.base_dir}{self.lang if not is_en else 'en'}/{file}.json"
+        )
         return json.loads(
             open(
-                f"{self.base_dir}/{self.lang if not is_en else 'en'}/{file}.json",
+                f"{self.base_dir}{self.lang if not is_en else 'en'}/{file}.json",
                 encoding="utf-8",
             ).read()
         )
@@ -88,6 +91,17 @@ class Parser:
         self.mod_translations = {}
         self.mods = {}
         self.matchers_no_trade_ids = []
+
+        base_en = self.load_file("BaseItemTypes", is_en=True)
+        self.base_en_items_lookup = dict()
+        for item in base_en:
+            id = item.get("_index")
+            if id is None:
+                continue
+            name = item.get("Name")
+            if name is None:
+                continue
+            self.base_en_items_lookup[id] = name
 
     def make_poe_cdn_url(self, path):
         return urllib.parse.urljoin("https://web.poecdn.com/", path)
@@ -399,10 +413,14 @@ class Parser:
                 continue
 
             class_key = item.get("ItemClassesKey")
+            refName = name
+            if id in self.base_en_items_lookup:
+                refName = self.base_en_items_lookup[id]
 
+            # update name to localized keep ref name as english
             self.items[id] = {
                 "name": name,
-                "refName": name,
+                "refName": refName,
                 "namespace": "ITEM",
                 "class": class_key,
                 "dropLevel": item.get("DropLevel"),
@@ -509,6 +527,7 @@ class Parser:
         items_name = sorted(self.items.values(), key=lambda x: x.get("name"))
         for item in items_name:
             name = item.get("name")
+            refName = item.get("refName")
             namespace = item.get("namespace", "ITEM")
             craftable = item.get("craftable", None)
             gem = item.get("gem", None)
@@ -520,7 +539,7 @@ class Parser:
 
             out = {
                 "name": name,
-                "refName": name,
+                "refName": refName,
                 "namespace": namespace,
                 "icon": icon,
             }
@@ -616,5 +635,5 @@ class Parser:
 
 if __name__ == "__main__":
     logger.info("Starting parser")
-    set_log_level(logging.WARNING)
+    set_log_level(logging.INFO)
     Parser("ru").run()
