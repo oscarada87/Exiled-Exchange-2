@@ -97,8 +97,12 @@ const parsers: Array<ParserFn | { virtual: VirtualParserFn }> = [
 
 export function parseClipboard(clipboard: string): Result<ParsedItem, string> {
   try {
-    const parseChatString = parseChat(clipboard);
-    let sections = itemTextToSections(parseChatString);
+    const chatRegex = /\[.*?\]|\[.*?\|.*?\]/;
+    const isFromChat = chatRegex.test(clipboard);
+    if (isFromChat) {
+      clipboard = parseChat(clipboard);
+    }
+    let sections = itemTextToSections(clipboard);
 
     if (sections[0][2] === _$.CANNOT_USE_ITEM) {
       sections[0].pop(); // remove CANNOT_USE_ITEM line
@@ -127,6 +131,9 @@ export function parseClipboard(clipboard: string): Result<ParsedItem, string> {
           break;
         }
       }
+    }
+    if (parsed.isOk() && isFromChat) {
+      parsed.value.fromChat = isFromChat;
     }
     return Object.freeze(parsed);
   } catch (e) {
