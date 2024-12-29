@@ -3012,7 +3012,6 @@
 {"name": "과대망상", "refName": "과대망상", "namespace": "UNIQUE", "unique": {"base": "다이아몬드"}}
 {"name": "믿음의 분광기", "refName": "믿음의 분광기", "namespace": "UNIQUE", "unique": {"base": "다이아몬드"}}
 {"name": "치장한 자", "refName": "치장한 자", "namespace": "UNIQUE", "unique": {"base": "다이아몬드"}}
-{"name": "푸른혀", "refName": "푸른혀", "namespace": "UNIQUE", "unique": {"base": "절단도"}}
 {"name": "요동치는 두뇌", "refName": "요동치는 두뇌", "namespace": "UNIQUE", "unique": {"base": "징 박힌 대곤봉"}}
 {"name": "브린핸드의 징표", "refName": "브린핸드의 징표", "namespace": "UNIQUE", "unique": {"base": "목재 곤봉"}}
 {"name": "초버 차버", "refName": "초버 차버", "namespace": "UNIQUE", "unique": {"base": "납빛 대망치"}}
@@ -3027,26 +3026,22 @@
 {"name": "돼지사냥", "refName": "돼지사냥", "namespace": "UNIQUE", "unique": {"base": "쓰러진 대곤봉"}}
 {"name": "흐림노르의 찬가", "refName": "흐림노르의 찬가", "namespace": "UNIQUE", "unique": {"base": "참나무 대망치"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "노파 단도"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "무딘 손도끼"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "철창날 창"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "넓적검"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "철 대검"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "흡혈 칼날"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "단순한 단검"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "사슬 도리깨"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "갈고리 도끼"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "수염 도끼"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "도적 손도끼"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "흡혈 칼날"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "까맣게 탄 절단도"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "고상한 글레이브"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "파문 대검"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "달의 단검"}}
-{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "신성한 도리깨"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "쌍둥이 도리깨"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "무딘 손도끼"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "갈고리 도끼"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "연장 가로날도끼"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "도적 손도끼"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "철창날 창"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "사냥 창"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "전쟁 창"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "까맣게 탄 절단도"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "고상한 글레이브"}}
 {"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "부식된 장검"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "철 대검"}}
+{"name": "미완성", "refName": "미완성", "namespace": "UNIQUE", "unique": {"base": "파문 대검"}}
 {"name": "생명의 가지", "refName": "생명의 가지", "namespace": "UNIQUE", "unique": {"base": "조율된 마법봉"}}
 {"name": "마챠", "refName": "마챠", "namespace": "UNIQUE", "unique": {"base": "초승달 육척봉"}}
 {"name": "연무의 속삭임", "refName": "연무의 속삭임", "namespace": "UNIQUE", "unique": {"base": "임시 석궁"}}
@@ -3066,7 +3061,6 @@
 {"name": "타린의 오한", "refName": "타린의 오한", "namespace": "UNIQUE", "unique": {"base": "극한의 지팡이"}}
 {"name": "피의 가시", "refName": "피의 가시", "namespace": "UNIQUE", "unique": {"base": "싸맨 육척봉"}}
 {"name": "그림자의 짐", "refName": "그림자의 짐", "namespace": "UNIQUE", "unique": {"base": "차임벨 지팡이"}}
-{"name": "춤추는 수도승", "refName": "춤추는 수도승", "namespace": "UNIQUE", "unique": {"base": "시미터"}}
 {"name": "어둠의 모독자", "refName": "어둠의 모독자", "namespace": "UNIQUE", "unique": {"base": "덜컹대는 셉터"}}
 {"name": "이글거리는 손길", "refName": "이글거리는 손길", "namespace": "UNIQUE", "unique": {"base": "불저항 지팡이"}}
 {"name": "보초", "refName": "보초", "namespace": "UNIQUE", "unique": {"base": "고딕 육척봉"}}

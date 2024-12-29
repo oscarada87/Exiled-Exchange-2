@@ -593,6 +593,18 @@ class Parser:
 
             m.write(json.dumps(mod, ensure_ascii=False) + "\n")
             seen.add(id)
+
+        # Add temp allocates
+        with open(
+            f"{self.get_script_dir()}/overrideData/allocates.json",
+            "r",
+            encoding="utf-8",
+        ) as temp_allocates:
+            allocates = json.load(temp_allocates)
+            if self.lang in allocates:
+                m.write(json.dumps(allocates[self.lang], ensure_ascii=False) + "\n")
+            else:
+                m.write(json.dumps(allocates["en"], ensure_ascii=False) + "\n")
         m.close()
 
         with open(

@@ -3012,7 +3012,6 @@
 {"name": "Мания величия", "refName": "Мания величия", "namespace": "UNIQUE", "unique": {"base": "Алмаз"}}
 {"name": "Prism of Belief", "refName": "Prism of Belief", "namespace": "UNIQUE", "unique": {"base": "Алмаз"}}
 {"name": "Былой блеск", "refName": "Былой блеск", "namespace": "UNIQUE", "unique": {"base": "Алмаз"}}
-{"name": "Синее жало", "refName": "Синее жало", "namespace": "UNIQUE", "unique": {"base": "Короткий меч"}}
 {"name": "Мозготряс", "refName": "Мозготряс", "namespace": "UNIQUE", "unique": {"base": "Шипастая палица"}}
 {"name": "Знак Бринханда", "refName": "Знак Бринханда", "namespace": "UNIQUE", "unique": {"base": "Деревянная дубинка"}}
 {"name": "Стук-Постук", "refName": "Стук-Постук", "namespace": "UNIQUE", "unique": {"base": "Освинцованный молот"}}
@@ -3027,26 +3026,22 @@
 {"name": "Кабаний промысел", "refName": "Кабаний промысел", "namespace": "UNIQUE", "unique": {"base": "Дубина из пня"}}
 {"name": "Гимн Гримнора", "refName": "Гимн Гримнора", "namespace": "UNIQUE", "unique": {"base": "Дубовая кувалда"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Старый нож"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Тупой топорик"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Копьё с железным наконечником"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Широкий меч"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Железный большой меч"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Клинок-кровопийца"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Простой кинжал"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Цепное гасило"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Секач"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Бородовидный топор"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Бандитский чекан"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Клинок-кровопийца"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Обугленный короткий меч"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Изящная глевия"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Фламберг"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Лунный кинжал"}}
-{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Священное молотило"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Двойной кистень"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Тупой топорик"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Секач"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Удлинённый тесак"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Бандитский чекан"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Копьё с железным наконечником"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Охотничье копьё"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Воинское копьё"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Обугленный короткий меч"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Изящная глевия"}}
 {"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Ржавый длинный меч"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Железный большой меч"}}
+{"name": "INCOMPLETE", "refName": "INCOMPLETE", "namespace": "UNIQUE", "unique": {"base": "Фламберг"}}
 {"name": "Живой побег", "refName": "Живой побег", "namespace": "UNIQUE", "unique": {"base": "Вытягивающий жезл"}}
 {"name": "Matsya", "refName": "Matsya", "namespace": "UNIQUE", "unique": {"base": "Боевой посох с полумесяцем"}}
 {"name": "Mist Whisper", "refName": "Mist Whisper", "namespace": "UNIQUE", "unique": {"base": "Самодельный самострел"}}
@@ -3066,7 +3061,6 @@
 {"name": "Дрожь Тарина", "refName": "Дрожь Тарина", "namespace": "UNIQUE", "unique": {"base": "Студёный посох"}}
 {"name": "Кровавый шип", "refName": "Кровавый шип", "namespace": "UNIQUE", "unique": {"base": "Обмотанный боевой посох"}}
 {"name": "The Burden of Shadows", "refName": "The Burden of Shadows", "namespace": "UNIQUE", "unique": {"base": "Звенящий посох"}}
-{"name": "Танцующий дервиш", "refName": "Танцующий дервиш", "namespace": "UNIQUE", "unique": {"base": "Скимитар"}}
 {"name": "Тёмный осквернитель", "refName": "Тёмный осквернитель", "namespace": "UNIQUE", "unique": {"base": "Гремящий скипетр"}}
 {"name": "Опаляющее касание", "refName": "Опаляющее касание", "namespace": "UNIQUE", "unique": {"base": "Пирофитовый посох"}}
 {"name": "Часовой", "refName": "Часовой", "namespace": "UNIQUE", "unique": {"base": "Готический боевой посох"}}
