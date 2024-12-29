@@ -105,7 +105,7 @@ export default {
   CHAT_WHISPER_TO: /^@To (?<char_name>.+?): (?<body>.+)$/,
   CHAT_WHISPER_FROM: /^@From (?:<(?<guild_tag>.+?)> )?(?<char_name>.+?): (?<body>.+)$/,
   CHAT_WEBTRADE_GEM: /^レベル (?<gem_lvl>\d+) (?<gem_qual>\d+)% (?<gem_name>.+)$/,
-  REQUIREMENTS: '装備条件',
+  REQUIREMENTS: '装備要求:',
   CHARM_SLOTS: 'チャームスロット:',
   BASE_SPIRIT: 'スピリット:',
   QUIVER_HELP_TEXT: '弓装備時のみ装備可能',

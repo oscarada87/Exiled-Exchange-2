@@ -164,7 +164,9 @@ export default defineComponent({
               item.info.refName === prevItem.info.refName)
               ? prevCurrency
               : undefined,
-          usePseudo: widget.value.usePseudo,
+          usePseudo:
+            widget.value.usePseudo &&
+            AppConfig().language in ["en", "ru", "ko", "cmn-Hant"],
         });
 
         if (
