@@ -121,6 +121,7 @@ export default defineComponent({
   setup(props) {
     const widget = computed(() => AppConfig<PriceCheckWidget>("price-check")!);
     const leagues = useLeagues();
+    const lang = computed(() => AppConfig().language);
 
     const presets = ref<{ active: string; presets: FilterPreset[] }>(null!);
     const itemFilters = computed(
@@ -166,7 +167,7 @@ export default defineComponent({
               : undefined,
           usePseudo:
             widget.value.usePseudo &&
-            AppConfig().language in ["en", "ru", "ko", "cmn-Hant"],
+            ["en", "ru", "ko", "cmn-Hant"].includes(lang.value),
         });
 
         if (
