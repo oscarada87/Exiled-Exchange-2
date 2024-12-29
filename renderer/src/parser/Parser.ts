@@ -537,6 +537,9 @@ function parseRuneSockets(section: string[], item: ParsedItem) {
   if (section[0].startsWith(_$.SOCKETS)) {
     const sockets = section[0].slice(_$.SOCKETS.length).trimEnd();
     const totalMax = Math.max(sockets.split("S").length - 1, categoryMax);
+    item.runeSockets = Array.from({ length: totalMax }, () => {
+      return { isEmpty: true };
+    });
 
     return "SECTION_PARSED";
   }
@@ -893,6 +896,15 @@ function parseModifiersPoe2(section: string[], item: ParsedItem) {
       tags: [],
     };
     foundAnyMods = parseStatsFromMod(lines, item, { info: modInfo, stats: [] });
+
+    if (foundAnyMods && modInfo.type === ModifierType.Rune) {
+      const runeMods = item.statsByType.filter(
+        (calc) => calc.type === ModifierType.Rune,
+      );
+      for (let i = 0; i < runeMods.length; i++) {
+        item.runeSockets![i].isEmpty = false;
+      }
+    }
   } else {
     for (const statLines of section) {
       const { modType, lines } = parseModType([statLines]);
