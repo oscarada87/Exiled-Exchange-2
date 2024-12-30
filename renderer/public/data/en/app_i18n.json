@@ -132,7 +132,8 @@
     "sanctum_relic": "Sanctum Relic",
     "tincture": "Tincture",
     "azmeri_charm": "Charm",
-    "weapon_crossbow": "Crossbow"
+    "weapon_crossbow": "Crossbow",
+    "armour_focus": "Focus"
   },
   "filters": {
     "selected_some": "{0} of {1}, stats",

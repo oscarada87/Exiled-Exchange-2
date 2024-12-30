@@ -1454,6 +1454,7 @@ function getMaxSockets(category: ItemCategory | undefined) {
     case ItemCategory.Dagger:
     case ItemCategory.Wand:
     case ItemCategory.Sceptre:
+    case ItemCategory.Focus:
       return 1;
     default:
       return 0;

@@ -66,6 +66,7 @@ export const CATEGORY_TO_TRADE_ID = new Map([
   [ItemCategory.SkillGem, "gem.activegem"],
   [ItemCategory.SupportGem, "gem.supportgem"],
   [ItemCategory.MetaGem, "gem.metagem"],
+  [ItemCategory.Focus, "armour.focus"],
 ]);
 
 const TOTAL_MODS_TEXT = {
