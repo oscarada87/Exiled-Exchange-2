@@ -4,6 +4,7 @@ import {
   StatFilter,
   INTERNAL_TRADE_IDS,
   InternalTradeId,
+  RuneFilter,
 } from "../filters/interfaces";
 import { setProperty as propSet } from "dot-prop";
 import { DateTime } from "luxon";
@@ -215,7 +216,7 @@ interface FetchResult {
     ilvl?: number;
     stackSize?: number;
     corrupted?: boolean;
-    gemSockets?: Array<String>;
+    gemSockets?: string[];
     properties?: Array<{
       values: [[string, number]];
       type:
@@ -259,6 +260,7 @@ export function createTradeRequest(
   filters: ItemFilters,
   stats: StatFilter[],
   item: ParsedItem,
+  runeFilters: RuneFilter[],
 ) {
   const body: TradeRequest = {
     query: {
@@ -364,6 +366,17 @@ export function createTradeRequest(
   }
 
   // EQUIPMENT FILTERS
+
+  if (runeFilters.length > 0) {
+    const emptyRuneSockets = runeFilters.filter((rune) => rune.isEmpty);
+    if (emptyRuneSockets.length > 0) {
+      propSet(
+        query.filters,
+        "equipment_filters.filters.rune_sockets.min",
+        emptyRuneSockets.filter((rune) => !rune.disabled).length,
+      );
+    }
+  }
 
   // REQ FILTERS
 

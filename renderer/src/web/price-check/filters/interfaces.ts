@@ -6,6 +6,7 @@ export interface FilterPreset {
   id: string;
   filters: ItemFilters;
   stats: StatFilter[];
+  runeFilters: RuneFilter[];
 }
 
 interface SearchFilter {
@@ -29,6 +30,7 @@ export interface ItemFilters {
   socketNumber?: FilterNumeric;
   linkedSockets?: FilterNumeric;
   whiteSockets?: FilterNumeric;
+  emptyRuneSockets?: FilterNumeric;
   corrupted?: {
     value: boolean;
     exact?: boolean;
@@ -79,6 +81,13 @@ export interface FilterNumeric {
   value: number;
   max?: number | undefined;
   disabled: boolean;
+}
+
+export interface RuneFilter {
+  rune?: string;
+  text?: string;
+  isEmpty: boolean;
+  disabled: boolean; // NOTE: mutable in UI
 }
 
 export interface StatFilter {
